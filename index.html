@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Book Library</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Book Library</h1>
+        <span id="book-count">0 books</span>
+    </header>
+
+    <main>
+        <section class="controls">
+            <div class="add-form">
+                <input type="text" id="title" placeholder="Book title" />
+                <input type="text" id="author" placeholder="Author" />
+                <select id="genre">
+                    <option value="">Select genre</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Science">Science</option>
+                    <option value="History">History</option>
+                    <option value="Fantasy">Fantasy</option>
+                </select>
+                <button id="add-btn">Add Book</button>
+            </div>
+            <div class="filters">
+                <input type="text" id="search" placeholder="Search by title..." />
+                <select id="filter-genre">
+                    <option value="">All genres</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Science">Science</option>
+                    <option value="History">History</option>
+                    <option value="Fantasy">Fantasy</option>
+                </select>
+            </div>
+        </section>
+
+        <section id="book-list" class="book-grid"></section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5f5f5;
+    color: #333;
+}
+
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    font-size: 1.8rem;
+}
+
+#book-count {
+    background: #e74c3c;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+main {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.controls {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.add-form, .filters {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.filters {
+    margin-bottom: 0;
+}
+
+input, select {
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 150px;
+}
+
+button {
+    padding: 0.6rem 1.5rem;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+button:hover {
+    background: #34495e;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+}
+
+.book-card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.book-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.book-card .author {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+}
+
+/* BUG (KAN-3): All genre badges the same grey color — no visual distinction */
+.genre-badge {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    background: #95a5a6;
+    color: white;
+    margin-bottom: 0.8rem;
+}
+
+.book-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.btn-delete {
+    background: #e74c3c;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #999;
+    padding: 3rem;
+    font-size: 1.1rem;
+}
