@@ -57,13 +57,11 @@ function deleteBook(id) {
 }
 
 function filterBooks() {
-    // BUG (KAN-1 Bug): Search is case-sensitive — missing .toLowerCase() on both sides.
-    // Searching "the" will not find "The Great Gatsby".
-    const search = document.getElementById('search').value;
+    const search = document.getElementById('search').value.toLowerCase();
     const genre = document.getElementById('filter-genre').value;
 
     const filtered = books.filter(book => {
-        const matchTitle = book.title.includes(search);
+        const matchTitle = book.title.toLowerCase().includes(search);
         const matchGenre = genre === '' || book.genre === genre;
         return matchTitle && matchGenre;
     });
