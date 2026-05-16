@@ -130,6 +130,21 @@ button:hover {
     background: #c0392b;
 }
 
+.btn-read {
+    background: #27ae60;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+}
+
+.btn-read:hover {
+    background: #219a52;
+}
+
+.book-card.read {
+    opacity: 0.6;
+    border-left: 4px solid #27ae60;
+}
+
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;

@@ -18,16 +18,16 @@ function renderBooks(list) {
     // BUG (KAN-5 Security): User input injected via innerHTML without sanitization.
     // A title like <img src=x onerror=alert(1)> will execute arbitrary JavaScript.
     grid.innerHTML = list.map(book => `
-        <div class="book-card" data-id="${book.id}">
+        <div class="book-card ${book.read ? 'read' : ''}" data-id="${book.id}">
             <h3>${book.title}</h3>
             <p class="author">by ${book.author}</p>
             <span class="genre-badge">${book.genre}</span>
             <div class="book-actions">
+                <button class="btn-read" onclick="toggleRead(${book.id})">${book.read ? 'Unmark' : 'Mark as Read'}</button>
                 <button class="btn-delete" onclick="deleteBook(${book.id})">Delete</button>
             </div>
         </div>
     `).join('');
-    // BUG (KAN-2 Story): No "Mark as Read" button — read/unread feature is entirely missing.
 }
 
 function addBook() {
@@ -47,6 +47,12 @@ function addBook() {
     document.getElementById('genre').value = '';
 
     document.getElementById('book-count').textContent = books.length + ' books';
+    renderBooks(books);
+}
+
+function toggleRead(id) {
+    const book = books.find(b => b.id === id);
+    if (book) book.read = !book.read;
     renderBooks(books);
 }
 
