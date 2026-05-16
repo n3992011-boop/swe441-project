@@ -152,3 +152,36 @@ button:hover {
     padding: 3rem;
     font-size: 1.1rem;
 }
+
+#dark-toggle {
+    background: transparent;
+    border: 1px solid white;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+}
+
+#dark-toggle:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+body.dark-mode {
+    background: #1a1a2e;
+    color: #eee;
+}
+
+body.dark-mode header {
+    background: #16213e;
+}
+
+body.dark-mode .controls,
+body.dark-mode .book-card {
+    background: #0f3460;
+    color: #eee;
+}
+
+body.dark-mode input,
+body.dark-mode select {
+    background: #16213e;
+    color: #eee;
+    border-color: #444;
+}

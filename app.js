@@ -89,6 +89,11 @@ function filterBooks() {
 document.getElementById('add-btn').addEventListener('click', addBook);
 document.getElementById('search').addEventListener('input', filterBooks);
 document.getElementById('filter-genre').addEventListener('change', filterBooks);
+document.getElementById('dark-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('dark-toggle').textContent =
+        document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+});
 
 document.getElementById('book-count').textContent = books.length + ' books';
 renderBooks(books);
