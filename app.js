@@ -52,7 +52,7 @@ function addBook() {
 
 function deleteBook(id) {
     books = books.filter(b => b.id !== id);
-    // BUG (KAN-6 Bug): book-count in the header is NOT updated after deletion.
+    document.getElementById('book-count').textContent = books.length + ' books';
     renderBooks(books);
 }
 
