@@ -1,11 +1,17 @@
 // BUG (KAN-4 Technical Debt): No code organization — all logic in global scope,
 // no separation of concerns, no modules or classes.
 
-let books = [];
-let nextId = 1;
+function saveBooks() {
+    localStorage.setItem('books', JSON.stringify(books));
+}
 
-// BUG (KAN-7 Story): No localStorage — books are lost on every page refresh.
-// Fix: load from localStorage on startup and save on every change.
+function loadBooks() {
+    const stored = localStorage.getItem('books');
+    return stored ? JSON.parse(stored) : [];
+}
+
+let books = loadBooks();
+let nextId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
 
 function renderBooks(list) {
     const grid = document.getElementById('book-list');
@@ -41,6 +47,7 @@ function addBook() {
     }
 
     books.push({ id: nextId++, title, author, genre, read: false });
+    saveBooks();
 
     document.getElementById('title').value = '';
     document.getElementById('author').value = '';
@@ -53,11 +60,13 @@ function addBook() {
 function toggleRead(id) {
     const book = books.find(b => b.id === id);
     if (book) book.read = !book.read;
+    saveBooks();
     renderBooks(books);
 }
 
 function deleteBook(id) {
     books = books.filter(b => b.id !== id);
+    saveBooks();
     document.getElementById('book-count').textContent = books.length + ' books';
     renderBooks(books);
 }
@@ -81,4 +90,5 @@ document.getElementById('add-btn').addEventListener('click', addBook);
 document.getElementById('search').addEventListener('input', filterBooks);
 document.getElementById('filter-genre').addEventListener('change', filterBooks);
 
+document.getElementById('book-count').textContent = books.length + ' books';
 renderBooks(books);
