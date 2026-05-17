@@ -1,5 +1,10 @@
-// BUG (KAN-4 Technical Debt): No code organization — all logic in global scope,
-// no separation of concerns, no modules or classes.
+// ─── State ────────────────────────────────────────────────────────────────────
+
+let books = loadBooks();
+let nextId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
+let editingId = null;
+
+// ─── Storage ──────────────────────────────────────────────────────────────────
 
 function saveBooks() {
     localStorage.setItem('books', JSON.stringify(books));
@@ -10,8 +15,7 @@ function loadBooks() {
     return stored ? JSON.parse(stored) : [];
 }
 
-let books = loadBooks();
-let nextId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
+// ─── Rendering ────────────────────────────────────────────────────────────────
 
 function renderBooks(list) {
     const grid = document.getElementById('book-list');
@@ -21,8 +25,7 @@ function renderBooks(list) {
         return;
     }
 
-    // BUG (KAN-5 Security): User input injected via innerHTML without sanitization.
-    // A title like <img src=x onerror=alert(1)> will execute arbitrary JavaScript.
+    // BUG (KAN-19 Security Fix): User input injected via innerHTML without sanitization.
     grid.innerHTML = list.map(book => `
         <div class="book-card ${book.read ? 'read' : ''}" data-id="${book.id}">
             <h3>${book.title}</h3>
@@ -36,6 +39,12 @@ function renderBooks(list) {
         </div>
     `).join('');
 }
+
+function updateBookCount() {
+    document.getElementById('book-count').textContent = books.length + ' books';
+}
+
+// ─── Book Operations ──────────────────────────────────────────────────────────
 
 function addBook() {
     const title = document.getElementById('title').value.trim();
@@ -55,17 +64,14 @@ function addBook() {
     } else {
         books.push({ id: nextId++, title, author, genre, read: false });
     }
-    saveBooks();
 
+    saveBooks();
     document.getElementById('title').value = '';
     document.getElementById('author').value = '';
     document.getElementById('genre').value = '';
-
-    document.getElementById('book-count').textContent = books.length + ' books';
+    updateBookCount();
     renderBooks(books);
 }
-
-let editingId = null;
 
 function editBook(id) {
     const book = books.find(b => b.id === id);
@@ -87,7 +93,7 @@ function toggleRead(id) {
 function deleteBook(id) {
     books = books.filter(b => b.id !== id);
     saveBooks();
-    document.getElementById('book-count').textContent = books.length + ' books';
+    updateBookCount();
     renderBooks(books);
 }
 
@@ -104,7 +110,7 @@ function filterBooks() {
     renderBooks(filtered);
 }
 
-// BUG (KAN-8 Change-Request): No dark mode support.
+// ─── Event Handlers ───────────────────────────────────────────────────────────
 
 document.getElementById('add-btn').addEventListener('click', addBook);
 document.getElementById('search').addEventListener('input', filterBooks);
@@ -115,5 +121,7 @@ document.getElementById('dark-toggle').addEventListener('click', () => {
         document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
 });
 
-document.getElementById('book-count').textContent = books.length + ' books';
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+updateBookCount();
 renderBooks(books);
