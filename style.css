@@ -153,6 +153,16 @@ button:hover {
     font-size: 1.1rem;
 }
 
+.btn-edit {
+    background: #f39c12;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+}
+
+.btn-edit:hover {
+    background: #d68910;
+}
+
 #dark-toggle {
     background: transparent;
     border: 1px solid white;

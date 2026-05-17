@@ -30,6 +30,7 @@ function renderBooks(list) {
             <span class="genre-badge">${book.genre}</span>
             <div class="book-actions">
                 <button class="btn-read" onclick="toggleRead(${book.id})">${book.read ? 'Unmark' : 'Mark as Read'}</button>
+                <button class="btn-edit" onclick="editBook(${book.id})">Edit</button>
                 <button class="btn-delete" onclick="deleteBook(${book.id})">Delete</button>
             </div>
         </div>
@@ -46,7 +47,14 @@ function addBook() {
         return;
     }
 
-    books.push({ id: nextId++, title, author, genre, read: false });
+    if (editingId !== null) {
+        const book = books.find(b => b.id === editingId);
+        if (book) { book.title = title; book.author = author; book.genre = genre; }
+        editingId = null;
+        document.getElementById('add-btn').textContent = 'Add Book';
+    } else {
+        books.push({ id: nextId++, title, author, genre, read: false });
+    }
     saveBooks();
 
     document.getElementById('title').value = '';
@@ -55,6 +63,18 @@ function addBook() {
 
     document.getElementById('book-count').textContent = books.length + ' books';
     renderBooks(books);
+}
+
+let editingId = null;
+
+function editBook(id) {
+    const book = books.find(b => b.id === id);
+    if (!book) return;
+    editingId = id;
+    document.getElementById('title').value = book.title;
+    document.getElementById('author').value = book.author;
+    document.getElementById('genre').value = book.genre;
+    document.getElementById('add-btn').textContent = 'Update Book';
 }
 
 function toggleRead(id) {
