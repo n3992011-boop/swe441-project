@@ -1,11 +1,21 @@
-// BUG (KAN-4 Technical Debt): No code organization — all logic in global scope,
-// no separation of concerns, no modules or classes.
+// ─── State ────────────────────────────────────────────────────────────────────
 
-let books = [];
-let nextId = 1;
+let books = loadBooks();
+let nextId = books.length > 0 ? Math.max(...books.map(b => b.id)) + 1 : 1;
+let editingId = null;
 
-// BUG (KAN-7 Story): No localStorage — books are lost on every page refresh.
-// Fix: load from localStorage on startup and save on every change.
+// ─── Storage ──────────────────────────────────────────────────────────────────
+
+function saveBooks() {
+    localStorage.setItem('books', JSON.stringify(books));
+}
+
+function loadBooks() {
+    const stored = localStorage.getItem('books');
+    return stored ? JSON.parse(stored) : [];
+}
+
+// ─── Rendering ────────────────────────────────────────────────────────────────
 
 function renderBooks(list) {
     const grid = document.getElementById('book-list');
@@ -15,20 +25,52 @@ function renderBooks(list) {
         return;
     }
 
-    // BUG (KAN-5 Security): User input injected via innerHTML without sanitization.
-    // A title like <img src=x onerror=alert(1)> will execute arbitrary JavaScript.
-    grid.innerHTML = list.map(book => `
-        <div class="book-card" data-id="${book.id}">
-            <h3>${book.title}</h3>
-            <p class="author">by ${book.author}</p>
-            <span class="genre-badge">${book.genre}</span>
-            <div class="book-actions">
-                <button class="btn-delete" onclick="deleteBook(${book.id})">Delete</button>
-            </div>
-        </div>
-    `).join('');
-    // BUG (KAN-2 Story): No "Mark as Read" button — read/unread feature is entirely missing.
+    grid.innerHTML = '';
+    list.forEach(book => {
+        const card = document.createElement('div');
+        card.className = 'book-card' + (book.read ? ' read' : '');
+        card.dataset.id = book.id;
+
+        const title = document.createElement('h3');
+        title.textContent = book.title;
+
+        const author = document.createElement('p');
+        author.className = 'author';
+        author.textContent = 'by ' + book.author;
+
+        const badge = document.createElement('span');
+        badge.className = 'genre-badge';
+        badge.textContent = book.genre;
+
+        const actions = document.createElement('div');
+        actions.className = 'book-actions';
+
+        const readBtn = document.createElement('button');
+        readBtn.className = 'btn-read';
+        readBtn.textContent = book.read ? 'Unmark' : 'Mark as Read';
+        readBtn.onclick = () => toggleRead(book.id);
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn-edit';
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => editBook(book.id);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-delete';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => deleteBook(book.id);
+
+        actions.append(readBtn, editBtn, deleteBtn);
+        card.append(title, author, badge, actions);
+        grid.appendChild(card);
+    });
 }
+
+function updateBookCount() {
+    document.getElementById('book-count').textContent = books.length + ' books';
+}
+
+// ─── Book Operations ──────────────────────────────────────────────────────────
 
 function addBook() {
     const title = document.getElementById('title').value.trim();
@@ -40,30 +82,53 @@ function addBook() {
         return;
     }
 
-    books.push({ id: nextId++, title, author, genre, read: false });
+    if (editingId !== null) {
+        const book = books.find(b => b.id === editingId);
+        if (book) { book.title = title; book.author = author; book.genre = genre; }
+        editingId = null;
+        document.getElementById('add-btn').textContent = 'Add Book';
+    } else {
+        books.push({ id: nextId++, title, author, genre, read: false });
+    }
 
+    saveBooks();
     document.getElementById('title').value = '';
     document.getElementById('author').value = '';
     document.getElementById('genre').value = '';
+    updateBookCount();
+    renderBooks(books);
+}
 
-    document.getElementById('book-count').textContent = books.length + ' books';
+function editBook(id) {
+    const book = books.find(b => b.id === id);
+    if (!book) return;
+    editingId = id;
+    document.getElementById('title').value = book.title;
+    document.getElementById('author').value = book.author;
+    document.getElementById('genre').value = book.genre;
+    document.getElementById('add-btn').textContent = 'Update Book';
+}
+
+function toggleRead(id) {
+    const book = books.find(b => b.id === id);
+    if (book) book.read = !book.read;
+    saveBooks();
     renderBooks(books);
 }
 
 function deleteBook(id) {
     books = books.filter(b => b.id !== id);
-    // BUG (KAN-6 Bug): book-count in the header is NOT updated after deletion.
+    saveBooks();
+    updateBookCount();
     renderBooks(books);
 }
 
 function filterBooks() {
-    // BUG (KAN-1 Bug): Search is case-sensitive — missing .toLowerCase() on both sides.
-    // Searching "the" will not find "The Great Gatsby".
-    const search = document.getElementById('search').value;
+    const search = document.getElementById('search').value.toLowerCase();
     const genre = document.getElementById('filter-genre').value;
 
     const filtered = books.filter(book => {
-        const matchTitle = book.title.includes(search);
+        const matchTitle = book.title.toLowerCase().includes(search);
         const matchGenre = genre === '' || book.genre === genre;
         return matchTitle && matchGenre;
     });
@@ -71,10 +136,18 @@ function filterBooks() {
     renderBooks(filtered);
 }
 
-// BUG (KAN-8 Change-Request): No dark mode support.
+// ─── Event Handlers ───────────────────────────────────────────────────────────
 
 document.getElementById('add-btn').addEventListener('click', addBook);
 document.getElementById('search').addEventListener('input', filterBooks);
 document.getElementById('filter-genre').addEventListener('change', filterBooks);
+document.getElementById('dark-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('dark-toggle').textContent =
+        document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+});
 
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+updateBookCount();
 renderBooks(books);
