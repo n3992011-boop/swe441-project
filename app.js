@@ -25,19 +25,45 @@ function renderBooks(list) {
         return;
     }
 
-    // BUG (KAN-19 Security Fix): User input injected via innerHTML without sanitization.
-    grid.innerHTML = list.map(book => `
-        <div class="book-card ${book.read ? 'read' : ''}" data-id="${book.id}">
-            <h3>${book.title}</h3>
-            <p class="author">by ${book.author}</p>
-            <span class="genre-badge">${book.genre}</span>
-            <div class="book-actions">
-                <button class="btn-read" onclick="toggleRead(${book.id})">${book.read ? 'Unmark' : 'Mark as Read'}</button>
-                <button class="btn-edit" onclick="editBook(${book.id})">Edit</button>
-                <button class="btn-delete" onclick="deleteBook(${book.id})">Delete</button>
-            </div>
-        </div>
-    `).join('');
+    grid.innerHTML = '';
+    list.forEach(book => {
+        const card = document.createElement('div');
+        card.className = 'book-card' + (book.read ? ' read' : '');
+        card.dataset.id = book.id;
+
+        const title = document.createElement('h3');
+        title.textContent = book.title;
+
+        const author = document.createElement('p');
+        author.className = 'author';
+        author.textContent = 'by ' + book.author;
+
+        const badge = document.createElement('span');
+        badge.className = 'genre-badge';
+        badge.textContent = book.genre;
+
+        const actions = document.createElement('div');
+        actions.className = 'book-actions';
+
+        const readBtn = document.createElement('button');
+        readBtn.className = 'btn-read';
+        readBtn.textContent = book.read ? 'Unmark' : 'Mark as Read';
+        readBtn.onclick = () => toggleRead(book.id);
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn-edit';
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = () => editBook(book.id);
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-delete';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = () => deleteBook(book.id);
+
+        actions.append(readBtn, editBtn, deleteBtn);
+        card.append(title, author, badge, actions);
+        grid.appendChild(card);
+    });
 }
 
 function updateBookCount() {
